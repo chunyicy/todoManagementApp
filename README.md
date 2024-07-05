@@ -1,6 +1,6 @@
 # Todo Management App
 
-## I used Spring Boot to build REST APIs for this Todo Management Application (Backend) project:
+## I used Spring Boot to build REST APIs for this Todo Management Application (Backend) Project:
 
 -	Build Add Todo REST API
 -	Build Get Todo by Id REST API
@@ -12,8 +12,11 @@
 -	Build Register REST API
 -	Build Login REST API
 -	Exception Handling - Create Custom Exception to deal with errors and exceptions
--	Implement GlobalExceptionHandler to handle exceptions globally and to centralize exception handling 
+-	Implement GlobalExceptionHandler to handle exceptions globally and to centralize exception handling
+-	Implement method-level security using role-based authorization, protecting REST APIs from unauthroized access based on user roles
+-	Implementing database authentication involves setting up Spring Security to authenticate users against a database rather than using in-memory authentication
 -	Secure REST APIs using JWT (JSON Web Token)
+-	Configure Spring Security to use JWT for authentication and authorization
 
 <br/>
 
@@ -26,6 +29,10 @@
 -	Postman Client
 -	MySQL Database
 -	IntelliJ IDEA
+
+<br/>
+
+## Build REST APIs
 
 <br/>
 
@@ -404,3 +411,327 @@ The inCompleteTodo() method in the service layer is responsible for updating the
 
 ![testInComplete2](https://github.com/chunyicy/todoManagementApp/assets/116086176/bc44c566-84fe-41a1-83b9-498446f4fbaf)
 
+
+<br/>
+<br/>
+
+## Secure REST API using JWT authentication
+
+<br/>
+
+Add JWT related maven dependencies. Generate a JWT secret key and JWT expiration date. Encrypt secret key using 256 SHA Algorithm. Convert 7 days to milliseconds and use it as expiration date, JWT token will expire after 7 days.
+
+<br/>
+
+![dependencies](https://github.com/chunyicy/todoManagementApp/assets/116086176/7d038d37-a410-452d-8437-a2b924b9d8bd)
+
+
+![secretkey](https://github.com/chunyicy/todoManagementApp/assets/116086176/fba58157-ae96-42d2-9505-c3cd2cff6333)
+
+
+<br/>
+
+#### Create JwtAuthenticationEntryPoint class:
+This class handles authentication failures when users try to access secured resources without proper authentication credentials. Exception is thrown due to unauthorized user trying to access a resource that requires authentication. The AuthenticationEntryPoint interface provides strategy for handling unsuccessful authentication attempts.
+
+<br/>
+
+![jwtAuthenticationEntryPointclass](https://github.com/chunyicy/todoManagementApp/assets/116086176/26e23066-8ba4-4bda-be07-2844ab59d2e0)
+
+<br/>
+
+#### Create JwtTokenProvider class:
+
+JwtTokenProvider class is responsible for generating JWT tokens, extracting information from tokens, and validating tokens.
+
+<br/>
+
+Generating Tokens: Used when a user logs in successfully (‘generateToken’).
+Validating Tokens: Ensures that incoming requests have valid JWT Tokens (‘validateToken’).
+Extracting User Information: Retrieves the username from a JWT token (‘getUsername’)
+
+![jwtTokenProviderclass](https://github.com/chunyicy/todoManagementApp/assets/116086176/554e506e-9e0c-44d2-983e-c120df8d84e0)
+
+![jwtTokenProviderclass2](https://github.com/chunyicy/todoManagementApp/assets/116086176/1a2c6f9c-7226-44fb-8b6d-7084eeb353f5)
+
+<br/>
+
+#### Create JwtAuthenticationFilter class:
+Create JwtAuthenticationFilter class to authenticate the JWT token. This class intercepts incoming requests, extract and validate JWT tokens from the Authorization header, and sets up Spring Security's authentication context based on the validated token.
+
+<br/>
+
+![jwtAuthenticationFilterclass](https://github.com/chunyicy/todoManagementApp/assets/116086176/9d3275e1-8bb2-4154-9f0f-d7bac69b2325)
+
+
+![jwtAuthenticationFilterclass2](https://github.com/chunyicy/todoManagementApp/assets/116086176/a65f00d9-c7d6-4fe2-813a-5e59f978ee3b)
+
+
+![jwtAuthenticationFilterclass3](https://github.com/chunyicy/todoManagementApp/assets/116086176/4ea6f9e6-3ee8-4bc8-81ec-bc3223601739)
+
+
+<br/>
+
+<br/>
+
+#### Create JwtAuthResponse class:
+The JwtAuthResponse class is a straightforward representation of the response structure when issuing JWT tokens. 
+
+![jwtAuthResponseclass](https://github.com/chunyicy/todoManagementApp/assets/116086176/fc4be3b8-ebfb-44d6-a9e3-7e0a796e4d27)
+
+<br/>
+
+<br/>
+
+#### Configure JWT in SpringSecurityConfig class:
+This class is to handle JWT-based authentication for different endpoints. 
+This setup ensures that:
+Authentication and authorization are configured properly.
+JWT-based authentication is handled before the standard username-password authentication.
+Method-level security (@PreAuthorize, etc.) is enabled with @EnableMethodSecurity.
+
+
+![springSecurityConfig](https://github.com/chunyicy/todoManagementApp/assets/116086176/026091c9-74f2-490d-a168-eb2a00d21cd4)
+
+
+![springSecurityConfig2](https://github.com/chunyicy/todoManagementApp/assets/116086176/424f5665-845e-40e6-8c4c-8effa26d7c99)
+
+
+<br/>
+
+<br/>
+
+
+### Implement method-level security using role-based authorization:
+
+By using @PreAuthorize with hasRole or hasAnyRole, you can control access to methods based on the roles of authenticated users in your Spring application.
+Achieve the role based authroization using method level security.
+In order to implement the method level security, we have to use two important annotations that is @EnableMethodSecurity annotation and @PreAuthorize annotation.
+
+
+![methodLevel](https://github.com/chunyicy/todoManagementApp/assets/116086176/6d102504-0f32-4a01-baa3-6089693508dd)
+
+<br/>
+
+### Implementing database authentication:
+
+<br/>
+
+#### Creating User and Role JPA Entities and store them in MySQL database:
+
+![userEntity](https://github.com/chunyicy/todoManagementApp/assets/116086176/0e8903d9-3704-4a39-b658-987f1951a95d)
+
+
+![roleEntity](https://github.com/chunyicy/todoManagementApp/assets/116086176/380a3557-46b1-486b-9a7b-c00c92ac2421)
+
+
+<br/>
+
+#### Creating UserRepository and RoleRepository:
+
+
+![userRepo](https://github.com/chunyicy/todoManagementApp/assets/116086176/a7c36484-bfe0-4f0e-8b84-cc3637d01216)
+
+
+![roleRepo](https://github.com/chunyicy/todoManagementApp/assets/116086176/1bb6ebe6-7f9e-4d5c-a41f-43d96b4854c4)
+
+
+<br/>
+
+#### Creating CustomUserDetailsService class:
+The CustomUserDetailsService class integrates with Spring Security to provide custom logic for loading user details from a database (via UserRepository). It retrieves user information based on username or email, maps user roles to Spring Security GrantedAuthority objects, and constructs a UserDetails object used for authentication and authorization within a Spring Security-enabled application.
+
+![customUserDetailsclass](https://github.com/chunyicy/todoManagementApp/assets/116086176/70d54388-bc13-4a32-9681-6552772eb317)
+
+<br/>
+
+#### Generating encoding password:
+
+![passwordEncodingImpl](https://github.com/chunyicy/todoManagementApp/assets/116086176/4c1d0206-2c74-4bd1-a5f7-7317dc72c7d7)
+
+<br/>
+
+#### MySQL Database - users table, roles table, users_roles table:
+
+
+![databaseUser](https://github.com/chunyicy/todoManagementApp/assets/116086176/0e8d94f9-7ec2-4b24-97ed-d02b27f6cba8)
+
+
+![databaseRole](https://github.com/chunyicy/todoManagementApp/assets/116086176/09857950-3900-4be0-82af-3bc2c8cfbaff)
+
+
+![joinTable](https://github.com/chunyicy/todoManagementApp/assets/116086176/c8bd6c5f-b11a-45bd-b9bc-5e36623d53c7)
+
+<br/>
+<br/>
+
+### 8. Build Register Register API
+
+#### Create RegisterDto Class:
+
+![registerDto](https://github.com/chunyicy/todoManagementApp/assets/116086176/b08dccfd-d86d-47aa-9212-742f904eeab6)
+
+
+<br/>
+
+#### Create AuthService interface and define register() method:
+
+![authServiceInterface](https://github.com/chunyicy/todoManagementApp/assets/116086176/89c0dab8-1f57-4eb7-9342-b5c6d613e4d2)
+
+
+<br/>
+
+#### Create AuthServiceImpl class:
+
+
+![authServiceImpl](https://github.com/chunyicy/todoManagementApp/assets/116086176/86be6de1-3a2d-4bf9-ac8e-1fa3b3a55354)
+
+
+<br/>
+
+#### Create AuthController and build Register REST API:
+
+![authController](https://github.com/chunyicy/todoManagementApp/assets/116086176/18f21daf-9303-4de0-a800-07f403fc8e81)
+
+
+<br/>
+
+#### Create Custom Exception Handling:
+
+![exceptionHandling](https://github.com/chunyicy/todoManagementApp/assets/116086176/6e2829bf-18e4-449e-9691-ba97bfc41de5)
+
+![exceptionHandling1](https://github.com/chunyicy/todoManagementApp/assets/116086176/f8afd905-c87f-4b4e-8797-3b56e59ef05f)
+
+![exceptionHandling2](https://github.com/chunyicy/todoManagementApp/assets/116086176/a848b850-518b-439d-a6f0-b6eda9dbfbfd)
+
+
+<br/>
+
+#### Test Register REST API using Postman Client:
+
+
+![testRegister](https://github.com/chunyicy/todoManagementApp/assets/116086176/67cf3fb9-ca4e-484e-b6fd-8f7f0cf1ec80)
+
+
+![userDatabase](https://github.com/chunyicy/todoManagementApp/assets/116086176/d65bbd62-c0ca-4294-8046-3cabcd8c7f7b)
+
+
+<br/>
+
+#### Test Register REST API with username and email already exist in database:
+
+Return error message of username already exists.
+
+![testRegisterUsernameExists](https://github.com/chunyicy/todoManagementApp/assets/116086176/a731d12f-685d-4b8c-87ca-531f441f4fb4)
+
+<br/>
+
+Return error message of email already exists.
+
+![testRegisterEmailExists](https://github.com/chunyicy/todoManagementApp/assets/116086176/be9f283e-bd7f-4f98-8624-d4af8f35f464)
+
+
+<br/>
+
+<br/>
+
+
+### 9. Build Login REST API
+
+#### Create LoginDto class:
+
+![loginDto](https://github.com/chunyicy/todoManagementApp/assets/116086176/76f4de67-89ea-43fe-a1f6-2432cc78a9e2)
+
+<br/>
+
+#### Define login() method in AuthService interface:
+
+![authServiceInterface](https://github.com/chunyicy/todoManagementApp/assets/116086176/c075c055-db52-45eb-93dd-31834fda9010)
+
+
+<br/>
+
+#### Implement login() method in AuthServiceImpl class:
+
+![authServiceImpl](https://github.com/chunyicy/todoManagementApp/assets/116086176/58dc086e-bb2f-44c3-a5c2-4f8c4108dbb4)
+
+
+<br/>
+
+#### Build Login REST API in AuthController class:
+
+![authController](https://github.com/chunyicy/todoManagementApp/assets/116086176/22cf4cfc-ae43-4a69-85b2-d212d6e851de)
+
+
+<br/>
+
+#### Test Login REST API using Postman Client:
+
+![testLogin](https://github.com/chunyicy/todoManagementApp/assets/116086176/fb3f33d5-b6cb-4c5c-bb1b-a8bedfb0dd1f)
+
+#### Test Non-User Login:
+
+Return error message : user not exists by username or email.
+
+![testNonUserLogin](https://github.com/chunyicy/todoManagementApp/assets/116086176/a11593d0-a451-4832-8b25-0dc6313f0545)
+
+<br/>
+
+## User Role can access Get Todo, Get All Todo, Mark Todo as Complete, Mark Todo as In-Complete but NOT AUTHORIZED to (Add Todo, Update Todo and Delete Todo):
+
+User login:
+
+![login](https://github.com/chunyicy/todoManagementApp/assets/116086176/02fa166c-f39e-40c4-86d9-6f360a092905)
+
+![loginToken](https://github.com/chunyicy/todoManagementApp/assets/116086176/84ecde4e-f665-40be-b5fb-5c66308705af)
+
+<br/>
+
+User cannot perform Add Todo, Update Todo and Delete Todo:
+
+![userAddTodo](https://github.com/chunyicy/todoManagementApp/assets/116086176/2f4ee8fd-4b36-4031-9ad2-d24706094bc9)
+
+![userUpdateTodo](https://github.com/chunyicy/todoManagementApp/assets/116086176/f86d01aa-9922-44ed-baa2-1c5d6964db15)
+
+
+![userDeleteTodo](https://github.com/chunyicy/todoManagementApp/assets/116086176/07b8a63f-5e42-48bf-ad3d-6ac4a21ff0b9)
+
+<br/>
+
+User can Get Todo, Get All Todo, Mark Todo as Complete and Mark Todo as In-Complete:
+
+![getTodobyId](https://github.com/chunyicy/todoManagementApp/assets/116086176/f2b5f06d-725f-44f3-a25b-6ecd0e24262a)
+
+
+![getTodo](https://github.com/chunyicy/todoManagementApp/assets/116086176/85e7606f-031c-404e-8807-43d7e70ca781)
+
+![completeTodo](https://github.com/chunyicy/todoManagementApp/assets/116086176/6ba5961f-ee4d-417f-b0f6-3378937924b3)
+
+
+![inCompleteTodo](https://github.com/chunyicy/todoManagementApp/assets/116086176/6883e30f-3dc8-4d0c-a641-834d2c742f11)
+
+
+<br/>
+
+<br/>
+
+
+## Admin Role can Add Todo, Update Todo, Delete Todo, Get Todo, Get All Todo, Mark Todo as Complete and Mark Todo as In-Complete:
+
+Admin Login:
+
+![adminLogin](https://github.com/chunyicy/todoManagementApp/assets/116086176/b0171e5b-2079-4355-8474-e39678d8fa49)
+
+
+![adminLoginToken](https://github.com/chunyicy/todoManagementApp/assets/116086176/439612a2-82d6-4b97-b92e-32b6f729c6ce)
+
+
+Add Todo, Update Todo and Delete Todo:
+
+![addTodo](https://github.com/chunyicy/todoManagementApp/assets/116086176/5ece1013-e4c9-43f9-b2ae-392c30b5fe90)
+
+
+![updateTodo](https://github.com/chunyicy/todoManagementApp/assets/116086176/bd108190-58d2-4a3f-bd16-d68650629716)
+
+
+![DeleteTodo](https://github.com/chunyicy/todoManagementApp/assets/116086176/acd245f7-9374-4d9f-ba25-8b3880d01c86)
